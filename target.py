@@ -165,12 +165,12 @@ if __name__ == '__main__':
     print('total {} points\n'.format(target_df.shape[0]))
     print(target_df[['file', 'lat_deg', 'lon_deg']])
     # csvname = 'result_' + '{:03d}'.format(int(height)) + 'm.csv'
-    csvname = 'test1.csv'
+    targetcsv = 'target_' + pathname + '.csv'
     try:
-        target_df.to_csv(csvname, columns=['file', 'lat_deg', 'lon_deg',
+        target_df.to_csv(targetcsv, columns=['file', 'lat_deg', 'lon_deg',
                                                 'xdata', 'ydata', 'xdata_trans', 'ydata_trans', 'x_meter', 'y_meter',
                                                 'x_target', 'y_target', 'x_deg', 'y_deg'
                                                 ])
-        print("Target points are saved successfully.")
+        print("Target points are saved as {}".format(targetcsv))
     except PermissionError:
         print('PermissionError')

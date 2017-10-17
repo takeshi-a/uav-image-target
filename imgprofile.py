@@ -46,7 +46,7 @@ def imgprofile(pathname):
 			df[k] = df['fpath'].map(get_GPS).apply(pd.Series)[k].apply(pd.Series)
 
 		csvname = 'filelist_' + pathname + '.csv'
-		csvpath = os.path.join(os.getcwd(), 'tmp', csvname)
+		csvpath = os.path.join(os.getcwd(), csvname)
 		try:
 			df.to_csv(csvpath, columns=['fname', 'fpath', 'DateTime', 'lat', 'lon', 'alt'])
 			print('Saved the profile Successfully here:')
