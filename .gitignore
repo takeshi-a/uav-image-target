@@ -1,0 +1,12 @@
+.ipynb_checkpoints/
+__pycache__/
+analysis/
+data/
+img/
+tmp/
+scratch.py
+*.csv
+*.ipynb
+!evaluate_result.ipynb
+!estimate_tolerance.ipynb
+matplotlibrc
