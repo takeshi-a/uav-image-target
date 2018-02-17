@@ -4,6 +4,7 @@ analysis/
 data/
 img/
 tmp/
+comp/
 scratch.py
 *.csv
 experiment_20171002.ipynb
