@@ -1,44 +1,4 @@
-# English Manual
-## Extracting GIS info from UAV images
-This module was originally made for a competition in which
-competitors detect dummy dear in forest using auto-flight UAV.
-You can extract the lat & lon from JPEG images taken by UAV.
-
-## Python modules
-### imgprofile.py
-Extract meta data from images and create SQLite DB 
-- Make a image flie list to pick up
-- Extract EXIF data
-- Create a pandas DataFrame
-
-### gistool.py
-Original module imported in imaprofile.py that wrangles EXIF mata data and create a pandas DataFrame
-which contains timestamp, lat, lon, etc.
-
-### target.py
-GUI module in which you can extract lat, lon by clicking the target points to pick up. 
-- Click the points in image on matplotlib GUI
-- Estimate (X,Y) on the image
-- Convert (X,Y) to (lon, lat)
-
-## notebook
-### estimate.ipynb
-For estimation of algorithm.
-
-### data_sandbox.ipynb
-For scratch data.
-
-### estimate_tolerance.ipynb
-For tolerance estimation of position gap in meter.
-
-### evaluate_result.ipynb
-For evaluation of experiment data.
-
-## flight_area.ipynb
-For estimation of flight area of competition
-
-===
-
+# UAV画像のGIS座標抽出モジュール
 # 日本語マニュアル
 ##座標抽出システム
 鹿検知コンペのための座標抽出プログラム。
@@ -79,4 +39,45 @@ For estimation of flight area of competition
 
 ## flight_area.ipynb
 コンペティションの飛行領域の推定
+
+
+# Module for GIS position extracting of UAV images 
+# English Manual
+## Extracting GIS info from UAV images
+This module was originally made for a competition in which
+competitors detect dummy dear in forest using auto-flight UAV.
+You can extract the lat & lon from JPEG images taken by UAV.
+
+## Python modules
+### imgprofile.py
+Extract meta data from images and create SQLite DB 
+- Make a image flie list to pick up
+- Extract EXIF data
+- Create a pandas DataFrame
+
+### gistool.py
+Original module imported in imaprofile.py that wrangles EXIF mata data and create a pandas DataFrame
+which contains timestamp, lat, lon, etc.
+
+### target.py
+GUI module in which you can extract lat, lon by clicking the target points to pick up. 
+- Click the points in image on matplotlib GUI
+- Estimate (X,Y) on the image
+- Convert (X,Y) to (lon, lat)
+
+## notebook
+### estimate.ipynb
+For estimation of algorithm.
+
+### data_sandbox.ipynb
+For scratch data.
+
+### estimate_tolerance.ipynb
+For tolerance estimation of position gap in meter.
+
+### evaluate_result.ipynb
+For evaluation of experiment data.
+
+## flight_area.ipynb
+For estimation of flight area of competition
 
