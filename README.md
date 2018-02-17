@@ -39,7 +39,7 @@ For estimation of flight area of competition
 
 
 # UAV画像のGIS座標抽出モジュール
-##座標抽出システム
+## 座標抽出システム
 鹿検知コンペのための座標抽出プログラム。
 指定した画像の中から任意の点の座標を抽出する。
 
