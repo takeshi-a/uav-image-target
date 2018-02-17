@@ -7,6 +7,7 @@ tmp/
 comp/
 scratch.py
 *.csv
+estimate.ipynb
 experiment_20171002.ipynb
 sample_math.ipynb
 *.png
