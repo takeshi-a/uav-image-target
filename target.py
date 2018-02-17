@@ -13,16 +13,13 @@ import os
 from math import pi, cos, sin
 import gistool
 from gistool import get_GPS, deg2dms, dms2deg
-from imgprofile import imgprofile, draw_map
 from PIL import Image
 # import glob
+# from imgprofile import imgprofile, draw_map
 
 # 画像パラメータ
 POLE_RADIUS = 6356752.314   #極半径
 EQUATOR_RADIUS = 6378137    #赤道半径
-
-# 画像の方位角（上向きの角度。真北を基準として反時計回りに角度表示）
-img_dir = 0
 
 # 画像処理クラス
 class clicker_class(object):
@@ -80,7 +77,7 @@ def draw_target_pts(img):
     plt.show()  
     return cc.pt_lst
 
-def make_df(pt_lst, imgpath):
+def make_df(pt_lst, imgpath, img_dir):
     # 目標点リストのデータフレームの作成
     df = pd.DataFrame(pt_lst, columns= ['xdata', 'ydata'])
     gps = get_GPS(imgpath)
@@ -90,6 +87,15 @@ def make_df(pt_lst, imgpath):
 
     # ファイル名の登録
     df['file'] = os.path.basename(imgpath)
+    if img_dir == dir_fw:
+        dir_sgn = "Forward"
+    elif img_dir == dir_bw:
+        dir_sgn = "Backward"
+    else:
+        dir_sgn = "wrong"
+
+    df['dir_sgn'] = dir_sgn
+    df['img_dir'] = img_dir
     # 画像座標の変換：原点を左上から画像中心へ、Y軸を反転
     df['xdata_trans'] = df['xdata'] - (px_wid / 2)
     df['ydata_trans'] = - df['ydata'] + (px_high / 2)
@@ -114,19 +120,17 @@ def make_df(pt_lst, imgpath):
 
 
 
+
 if __name__ == '__main__':
+    # 座標抽出するフォルダの指定
+    print('### Start to extract target points ###\n')
     pathname = input("Enter pathname: ")
-    img_df = imgprofile(pathname)
-    draw_map(img_df)
 
-    # 撮影の対地高度
-    height = input('Enter elevation height of image:')
+    # 撮影の対地高度の指定
+    height = input('Enter elevation height [m]:')
     if height == "":
-        height = 100
+        height = 60
     height = float(height)
-
-    # ccd_num_v = 3456 # num of ccd images vertical, 3456 for X4, 3956 for X5S 
-    # ccd_num_h = 4608 # num of ccd images horizontal, 4608 for X4, 5280 for X5S
 
     ccd_size_v = 13     # vertical ccd image size [mm]
     ccd_size_h = 17.3   # horizontal ccd image size [mm]
@@ -136,7 +140,13 @@ if __name__ == '__main__':
     img_size_v = ccd_size_v/float(f_length)*height
     img_size_h = ccd_size_h/float(f_length)*height
 
+    # 画像の方位角（上向きの角度。真北を基準として反時計回りに角度表示）
+    dir_fw = 153.090
+    dir_bw = dir_fw + 180
+    img_dir = dir_fw
+    print('Forward Direction Angle:{:.3f}'.format(dir_fw))
 
+    # 目標座標の抽出
     target_df = pd.DataFrame({})
     while True:
 
@@ -149,8 +159,20 @@ if __name__ == '__main__':
             print('data loaded: ' + imgfile)
             try:
                 img = np.array(Image.open(imgpath))
+                fwbw = input('Enter f(forward)/b(backward):')
+                # 進行方向を指定する
+                if fwbw == 'f':
+                    print('Forward')
+                    img_dir = dir_fw
+                elif fwbw == 'b':
+                    print('Backward')
+                    img_dir = dir_bw
+                else:
+                    print('Typed wrong! Try again.')
+
                 pt_lst = draw_target_pts(img)
-                df = make_df(pt_lst, imgpath)
+
+                df = make_df(pt_lst, imgpath, img_dir)
                 print('added {} points\n'.format(df.shape[0]))
                 target_df = target_df.append(df, ignore_index=True)
 
@@ -165,9 +187,12 @@ if __name__ == '__main__':
     print('total {} points\n'.format(target_df.shape[0]))
     print(target_df[['file', 'lat_deg', 'lon_deg']])
     # csvname = 'result_' + '{:03d}'.format(int(height)) + 'm.csv'
-    targetcsv = 'target_' + pathname + '.csv'
+    i = 0
+    while os.path.exists('target_{:d}.csv'.format(i)):
+        i+=1
+    targetcsv = 'target_{:d}.csv'.format(i)
     try:
-        target_df.to_csv(targetcsv, columns=['file', 'lat_deg', 'lon_deg',
+        target_df.to_csv(targetcsv, columns=['file', 'lat_deg', 'lon_deg', 'dir_sgn', 'img_dir',
                                                 'xdata', 'ydata', 'xdata_trans', 'ydata_trans', 'x_meter', 'y_meter',
                                                 'x_target', 'y_target', 'x_deg', 'y_deg'
                                                 ])

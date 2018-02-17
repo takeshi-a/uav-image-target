@@ -15,9 +15,48 @@ import os
 from glob import glob
 from gistool import get_GPS, get_datetime
 
+# 画像パラメータ
+POLE_RADIUS = 6356752.314   #極半径
+EQUATOR_RADIUS = 6378137    #赤道半径
+
+# 高尾実験エリアの四隅の定義（緯度、経度）
+left_bottom = (35.699241, 139.235341) # pt1, 左下
+right_bottom = (35.699241, 139.235588) # pt2, 右下
+right_top = (35.699466, 139.235588) # pt3,右上
+left_top = (35.699466, 139.235341) # pt4, 左上
+
+
+# # 飛行エリアの四隅の定義（緯度、経度）
+# left_bottom = (35.798097, 138.121126) # pt1, 左下
+# right_bottom = (35.797269, 138.123157) # pt2, 右下
+# right_top = (35.803047, 138.126746) # pt3,右上
+# left_top = (35.803874, 138.124729) # pt4, 左上
+
+
+# 四隅をnp.arrayにまとめる
+corners = np.array([left_bottom, right_bottom, right_top, left_top])
+
+# 飛行エリアの中心座標
+lat_center, lon_center = corners.mean(axis=0)
+center = (lat_center, lon_center)
+MYLATITUDE = lat_center
+MYLONGITUDE = lon_center
+
+# 緯度差をY軸距離に変換する
+def d_lat2dy(d_lat):
+    dy = POLE_RADIUS * d_lat * pi / 180
+    return dy
+
+# 経度差をX軸距離に変換する
+def d_lon2dx(d_lon):
+    dx = EQUATOR_RADIUS * cos(MYLATITUDE * pi / 180) * d_lon * pi / 180
+    return dx
+
+
 def imgprofile(pathname):
 	"""
 	実験データファイルのプロファイル取得
+	指定したフォルダ内のすべてのJPGファイルのメタデータを取得する
 	Input:
 		pathname: 画像データのフォルダ名
 	Output:
@@ -45,11 +84,11 @@ def imgprofile(pathname):
 		for k in gps_keys:
 			df[k] = df['fpath'].map(get_GPS).apply(pd.Series)[k].apply(pd.Series)
 
-		csvname = 'filelist_' + pathname + '.csv'
+		csvname = pathname + '_flist.csv'
 		csvpath = os.path.join(os.getcwd(), csvname)
 		try:
 			df.to_csv(csvpath, columns=['fname', 'fpath', 'DateTime', 'lat', 'lon', 'alt'])
-			print('Saved the profile Successfully here:')
+			print('Saved the profile data in:')
 			print(csvpath, '\n')
 		except:
 			print('Warning: Failed to save the profile data!\n')
@@ -73,75 +112,31 @@ def draw_map(df):
 	ax = fig.add_subplot(111)
 	plt.xlim(bottom_left[0], top_right[0])
 	plt.ylim(bottom_left[1], top_right[1])
+	plt.xlabel('lon')
+	plt.ylabel('lat')
+	plt.title('plot map: {}'.format(pathname))
 	plt.plot(df['lon'], df['lat'], 'bo') 
 	plt.plot(df['lon'], df['lat'], 'b-') 
 
+	corners_T = corners.T
+	plt.plot(np.vstack((corners, corners[0])).T[1], np.vstack((corners, corners[0])).T[0], 'r--')
+
 	# 始点（start）と終点（end）のプロットを矢印で示す
-	for pos, x, y in zip(['start', 'end'], df['lon'].iloc[[0,-1]], df['lat'].iloc[[0,-1]]):
-		plt.annotate(pos, xy=(x,y),
-					xytext=(x+lon_span/20.0, y+lat_span/20.0),
-					arrowprops=dict(facecolor='black', shrink = 0.05, width=1),
-				    horizontalalignment='left', verticalalignment='bottom')	
-	plt.show()
+	for fname, x, y in zip(df.fname.loc[::10], df.lon.loc[::10], df.lat.loc[::10]):
+		if fname[:3] == 'DJI':
+			fnum = fname.split('_')[1].split('.')[0]
+		else:
+			fnum = fname.split('.')[0]
 
-def plot_ref(df):
-	ref_ID_lst = [30, 33, 35, 38, 41, 44]
-	ref_df = df.iloc[ref_ID_lst]
-	lat_max = df['lat'].max()
-	lat_min = df['lat'].min()
-	lat_span = abs(lat_max - lat_min)
-	lon_max = df['lon'].max()
-	lon_min = df['lon'].min() 
-	lon_span = abs(lon_max - lon_min)
-	bottom_left = [lon_min - 0.05 * lon_span, lat_min - 0.05 * lat_span] 
-	top_right = [lon_max + 0.05 * lon_span, lat_max + 0.05 * lat_span]
-	fig = plt.figure(figsize=(8,6))
-	ax = fig.add_subplot(111)
-	plt.xlim(bottom_left[0], top_right[0])
-	plt.ylim(bottom_left[1], top_right[1])
-	plt.plot(ref_df['lon'], ref_df['lat'], 'ro', markersize=10) 
-	plt.plot(df['lon'], df['lat'], 'b-') 
-
-	for i, x, y in zip(range(len(ref_ID_lst)), ref_df['lon'], ref_df['lat']):
-		
-		pt_str = "pt" + str(i)
-		plt.annotate(pt_str, xy=(x,y),
-					xytext=(x+lon_span/20.0, y+lat_span/20.0),
-					arrowprops=dict(facecolor='black', shrink = 0.05, width=1),
-				    horizontalalignment='left', verticalalignment='bottom')	
-	plt.show()
-
-def plot_ref2(df):
-	# ref_ID_lst = [80:154]
-	ref_df2 = df.iloc[201:259]
-	lat_max = df['lat'].max()
-	lat_min = df['lat'].min()
-	lat_span = abs(lat_max - lat_min)
-	lon_max = df['lon'].max()
-	lon_min = df['lon'].min() 
-	lon_span = abs(lon_max - lon_min)
-	bottom_left = [lon_min - 0.05 * lon_span, lat_min - 0.05 * lat_span] 
-	top_right = [lon_max + 0.05 * lon_span, lat_max + 0.05 * lat_span]
-	fig = plt.figure(figsize=(8,6))
-	ax = fig.add_subplot(111)
-	plt.xlim(bottom_left[0], top_right[0])
-	plt.ylim(bottom_left[1], top_right[1])
-	plt.plot(ref_df2['lon'], ref_df2['lat'], 'bo', markersize=8) 
-	plt.plot(df['lon'], df['lat'], 'b-') 
-
-	for i, x, y in zip(ref_df2.index , ref_df2['lon'], ref_df2['lat']):
-		pt_str = "{:04d}".format(i)
-		plt.annotate(pt_str, xy=(x,y),
-					xytext=(x+lon_span * 0.01 , y+lat_span * 0.01),
+		plt.annotate(fnum, xy=(x,y),
+					xytext=(x+lon_span/20.0, y+lat_span/25.0),
 					arrowprops=dict(facecolor='black', shrink = 0.05, width=1),
 				    horizontalalignment='left', verticalalignment='bottom')	
 
-
-	plt.title('pattern: 4, alt = 80m, DJI_0203-0261.jpg')
 	plt.show()
-
 
 if __name__ == '__main__':
+    print('### Retrieve EXIF data ###\n')
 	pathname = input("Enter pathname: ")
 	df = imgprofile(pathname)
 	draw_map(df)

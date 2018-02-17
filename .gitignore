@@ -7,6 +7,7 @@ tmp/
 scratch.py
 *.csv
 *.ipynb
+*.png
 !evaluate_result.ipynb
 !estimate_tolerance.ipynb
 matplotlibrc
