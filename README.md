@@ -34,6 +34,9 @@ For tolerance estimation of position gap in meter.
 ### evaluate_result.ipynb
 For evaluation of experiment data.
 
+## flight_area.ipynb
+For estimation of flight area of competition
+
 ===
 
 # 日本語マニュアル
@@ -74,5 +77,6 @@ For evaluation of experiment data.
 実験データの検証。カメラ取付角、画像方位角、高度などの様々なずれの要素を考慮すると、<br>
 水平方向で10m以内の誤差に収めるには、高度を下げることが望ましい。
 
-
+## flight_area.ipynb
+コンペティションの飛行領域の推定
 
