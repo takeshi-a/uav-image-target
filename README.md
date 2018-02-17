@@ -4,7 +4,7 @@ This module was originally made for a competition in which
 competitors detect dummy dear in forest using auto-flight UAV.
 You can extract the lat & lon from JPEG images taken by UAV.
 
-## Python modules
+## 1. Python modules
 ### imgprofile.py
 Extract meta data from images and create SQLite DB 
 - Make a image flie list to pick up
@@ -21,7 +21,7 @@ GUI module in which you can extract lat, lon by clicking the target points to pi
 - Estimate (X,Y) on the image
 - Convert (X,Y) to (lon, lat)
 
-## notebook
+## 2. Jupyter Notebook
 ### estimate.ipynb
 For estimation of algorithm.
 
@@ -34,7 +34,7 @@ For tolerance estimation of position gap in meter.
 ### evaluate_result.ipynb
 For evaluation of experiment data.
 
-## flight_area.ipynb
+### flight_area.ipynb
 For estimation of flight area of competition
 
 
@@ -43,8 +43,7 @@ For estimation of flight area of competition
 鹿検知コンペのための座標抽出プログラム。
 指定した画像の中から任意の点の座標を抽出する。
 
-## モジュール
-
+## 1. Python modules
 ### imgprofile.py
 画像ファイルのプロファイルを読み込み、データフレームを作る
 
@@ -62,7 +61,7 @@ For estimation of flight area of competition
 - プロットのXY座標の算出
 - XY座標から緯度・経度の算出
 
-## notebook
+## 2. Jupyter Notebook
 ### estimate.ipynb
 計算を見積もるための参考ノートブック
 
@@ -76,7 +75,7 @@ For estimation of flight area of competition
 実験データの検証。カメラ取付角、画像方位角、高度などの様々なずれの要素を考慮すると、<br>
 水平方向で10m以内の誤差に収めるには、高度を下げることが望ましい。
 
-## flight_area.ipynb
+### flight_area.ipynb
 コンペティションの飛行領域の推定
 
 
